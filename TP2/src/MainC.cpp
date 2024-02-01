@@ -1,6 +1,6 @@
 #include "CounterIncrementer.h"
 
-int main(int, char* argv[])
+int main(int argc, char* argv[])
 {
 
     unsigned int nLoops = std::stoi(argv[1]);
