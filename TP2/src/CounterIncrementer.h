@@ -9,22 +9,17 @@
 #include <cmath>
 #include "Timespec.h"
 
-struct parameters
+struct Data
 {
-    double a;
-    double b;
+    volatile unsigned int nLoops;
+    volatile double pCounter;
+    pthread_mutex_t mutex;
 };
 
 void incr(unsigned int nLoops, double* pCounter);
 
-unsigned incr(unsigned int nLoops, double* pCounter, bool* pStop);
+void* call_incr(void* v_data);
 
-void myHandler(int, siginfo_t* si, void*);
-
-unsigned timerIncrementer(unsigned int nLoops, bool pStop, double periodSec, double periodNSec);
-
-struct parameters calib(unsigned int nLoops, bool pStop, timespec initTime, timespec finalTime);
-
-struct parameters calibImproved(unsigned int nLoops, bool pStop);
+void* call_incrMutex(void* v_data);
 
 #endif

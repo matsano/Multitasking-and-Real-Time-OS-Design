@@ -32,6 +32,7 @@ timespec timespec_now()
     return timeNow;
 }
 
+
 // Get opposite of a time
 timespec timespec_negate(const timespec& time_ts)
 {

@@ -1,6 +1,6 @@
 #include "CounterIncrementer.h"
 
-void incr(unsigned int nLoops, double* pCounter)
+void incr(volatile unsigned int nLoops, volatile double* pCounter)
 {
     for (unsigned int iLoop = 0; iLoop < nLoops; iLoop++)
     {
@@ -8,114 +8,28 @@ void incr(unsigned int nLoops, double* pCounter)
     }
 }
 
-
-unsigned incr(unsigned int nLoops, double* pCounter, bool* pStop)
+void incrMutex(volatile unsigned int nLoops, volatile double* pCounter, pthread_mutex_t* mutex)
 {
-    unsigned int iLoop;
-
-    for (iLoop = 0; iLoop < nLoops; iLoop++)
+    for (unsigned int iLoop = 0; iLoop < nLoops; iLoop++)
     {
-        if (*pStop)
-        {
-            break;
-        }
+        pthread_mutex_lock(mutex);
         *pCounter = *pCounter + 1;
+        pthread_mutex_unlock(mutex);
     }
-
-    return iLoop;
 }
 
-
-void myHandler(int, siginfo_t* si, void*)
+void* call_incr(void* v_data)
 {
-    bool* stop = (bool*) si->si_value.sival_ptr;
-    *stop = true;
+    Data* p_data = (Data*) v_data;
+    incr(p_data->nLoops, &p_data->pCounter);
+    
+    return v_data;
 }
 
-
-unsigned timerIncrementer(unsigned int nLoops, bool pStop, double periodSec, double periodNSec)
+void* call_incrMutex(void* v_data)
 {
-
-    struct sigaction sa;
-    sa.sa_flags = SA_SIGINFO;
-    sa.sa_sigaction = myHandler;
-    sigemptyset(&sa.sa_mask);
-    sigaction(SIGRTMIN, &sa, nullptr);
-
-    struct sigevent sev;
-    sev.sigev_notify = SIGEV_SIGNAL;
-    sev.sigev_signo = SIGRTMIN;
-    sev.sigev_value.sival_ptr = (void*) &pStop;
-
-    timer_t tid;
-    timer_create(CLOCK_REALTIME, &sev, &tid);
-    itimerspec its;
-    its.it_value.tv_sec = periodSec;
-    its.it_value.tv_nsec = periodNSec;
-    its.it_interval.tv_sec = 0;
-    its.it_interval.tv_nsec = 0;
-
-    double counter = 0.0;
-    timer_settime(tid, 0, &its, nullptr);
-    unsigned finalNLoops = incr(nLoops, &counter, &pStop);
-    timer_delete(tid);
-
-    return finalNLoops;
-}
-
-
-struct parameters calib(unsigned int nLoops, bool pStop, timespec initTime, timespec finalTime)
-{
-    struct parameters params;
-    unsigned initL = timerIncrementer(nLoops, pStop, initTime.tv_sec, initTime.tv_nsec);
-    unsigned finalL = timerIncrementer(nLoops, pStop, finalTime.tv_sec, finalTime.tv_nsec);
-
-    params.a = (finalL - initL) / (timespec_to_ms(timespec_subtract(finalTime, initTime))/1000);
-    params.b = finalL - (timespec_to_ms(finalTime) / 1000) * params.a;
-
-    return params;
-}
-
-
-struct parameters calibImproved(unsigned int nLoops, bool pStop)
-{
-    // Least Squares Method
-    struct parameters params;
-    unsigned l;
-    std::vector<std::tuple<double, unsigned>> valuesLT;
-
-    // Generate more measurements
-    int initT = 3;
-    int finalT = 10;
-    for (int t = initT; t < finalT; t++)
-    {
-        l = timerIncrementer(nLoops, pStop, t, 0);
-        valuesLT.push_back(std::make_tuple(t, l));
-    }
-
-    // Calculate the averages
-    double meanL = 0.0;
-    double meanT = 0.0;
-    for (const auto& tuple : valuesLT)
-    {
-        meanT = meanT + std::get<0>(tuple);
-        meanL = meanL + std::get<1>(tuple);
-    }
-    meanT = meanT / valuesLT.size();
-    meanL = meanL / valuesLT.size();
-
-    // Calculate Sxy and Sxx
-    double Sxx = 0.0;
-    double Sxy = 0.0;
-    for (const auto& tuple : valuesLT)
-    {
-        Sxy += (std::get<0>(tuple) - meanT) * (std::get<1>(tuple) - meanL);
-        Sxx += std::pow((std::get<0>(tuple) - meanT), 2);
-    }
-
-    // Calculate the parameters a and b
-    params.a = Sxy / Sxx;
-    params.b = meanL - params.a * meanT;
-
-    return params;
+    Data* p_data = (Data*) v_data;
+    incrMutex(p_data->nLoops, &p_data->pCounter, &p_data->mutex);
+    
+    return v_data;
 }
