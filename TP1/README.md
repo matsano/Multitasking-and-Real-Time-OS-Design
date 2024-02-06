@@ -33,7 +33,7 @@ After compiling with the commands above, 5 executables will be generated in the 
 
 - Question C
 ```bash
-./MainC 10
+./MainC 1000000
 ```
 
 - Question D
