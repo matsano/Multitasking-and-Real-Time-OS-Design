@@ -42,6 +42,4 @@ Cela permet d'exécuter le code spécifique au traitement de l'événement de te
 
 En résumé, la méthode "call_callback" agit comme un pont entre la réception d'un signal système (SIGRTMIN) et l'exécution de la fonction de rappel "callback" associée à une instance spécifique de la sub-classe de Timer.
 
-Dans la classe de base Timer, les méthodes qui doivent être modifiées ou implémentées dans les classes dérivées doivent être déclarées comme virtuelles.
-
-Par exemple, comme on veut implémenter distinctement la méthode "callback" pour chaque classe dérivée telle que CountDown, alors "callback" doit être déclarée comme virtuelle.
+Dans la classe de base Timer, les méthodes qui doivent être modifiées ou implémentées dans les classes dérivées doivent être déclarées comme virtuelles. Par exemple, comme on veut implémenter distinctement la méthode "callback" pour chaque classe dérivée telle que CountDown, alors "callback" doit être déclarée comme virtuelle.
