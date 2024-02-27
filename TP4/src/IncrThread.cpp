@@ -1,28 +1,24 @@
 #include "IncrThread.h"
 
-IncrThread::IncrThread(unsigned int numberLoops)
+IncrThread::IncrThread(Data* data) : incrData(data)
 {
-    data.nLoops = numberLoops;
-    data.pCounter = 0;
-
 }
 
 IncrThread::~IncrThread()
 {
-
 }
 
 void IncrThread::run()
 {
-    for(unsigned int i=0; i < data.nLoops; i++)
+    for(unsigned int i=0; i < incrData->nLoops; i++)
     {
-        data.pCounter += 1.0;
+        incrData->pCounter += 1.0;
     }
 }
 
-Data IncrThread::getData()
+double IncrThread::getPCounter()
 {
-    return data;
+    return incrData->pCounter;
 }
 
 

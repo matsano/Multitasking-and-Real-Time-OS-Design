@@ -2,6 +2,7 @@
 #define PosixThread_h_INCLUDED
 
 #include <iostream>
+#include <exception>
 #include <pthread.h>
 #include "Timespec.h"
 
@@ -15,8 +16,6 @@ protected:
     bool isActive;
 
 public:
-    class Exception;
-
     PosixThread();
     PosixThread(pthread_t posixId);
     ~PosixThread();

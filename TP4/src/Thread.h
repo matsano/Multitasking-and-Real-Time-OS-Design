@@ -8,6 +8,7 @@ class Thread : public PosixThread
 private:
     timespec startTime_ts, stopTime_ts, execTIme_ts;
     static void* call_run(void* v_trhead);
+    bool started;
 
 protected:
     virtual void run() = 0;

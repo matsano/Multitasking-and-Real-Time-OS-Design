@@ -1,17 +1,17 @@
-#include "IncrThread.h"
+#include "IncrThreadMutex.h"
 
 int main(int, char*argv[])
 {
     unsigned int nLoops = std::stoi(argv[1]);
     unsigned int nTasks = std::stoi(argv[2]);
-
     Data data = {nLoops, 0.0};
+    Mutex mutex;
 
     // Create nTasks threads
-    IncrThread* threads[nTasks];
+    IncrThreadMutex* threads[nTasks];
     for (unsigned int i = 0; i < nTasks; i++)
     {
-        threads[i] = new IncrThread(&data);
+        threads[i] = new IncrThreadMutex(&data, mutex);
     }
 
     timespec initTime = timespec_now();

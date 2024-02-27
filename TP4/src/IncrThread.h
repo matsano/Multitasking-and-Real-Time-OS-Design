@@ -2,7 +2,6 @@
 #define IncrThread_h_INCLUDED
 
 #include "Thread.h"
-#include <time.h>
 
 struct Data
 {
@@ -13,14 +12,14 @@ struct Data
 class IncrThread : public Thread
 {
 private:
-	Data data;
+	Data* incrData;
 
 public :
-	IncrThread(unsigned int numberLoops);
+	IncrThread(Data* data);
 	~IncrThread();
 
 	void run();
-	Data getData();
+	double getPCounter();
 };
 
 #endif

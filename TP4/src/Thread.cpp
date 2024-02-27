@@ -2,22 +2,21 @@
 
 Thread::Thread()
 {
-
+    started = false;
 }
 
 Thread::~Thread()
 {
-
 }
 
 void Thread::start()
 {
-    if(! isActive)
+    if(! started)
     {
-        isActive = true;
+        started = true;
         startTime_ts = timespec_now();
-        stopTime_ts = timespec_now();
         PosixThread::start(call_run, (void*) this);
+        stopTime_ts = timespec_now();
     }
 }
 

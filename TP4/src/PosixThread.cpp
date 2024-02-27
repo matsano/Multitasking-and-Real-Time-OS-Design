@@ -16,18 +16,18 @@ PosixThread::PosixThread(pthread_t posixId) : posixId(posixId), isActive(true)
     pthread_attr_init(&posixAttr);
     pthread_attr_setinheritsched(&posixAttr, PTHREAD_EXPLICIT_SCHED);
     sched_param schedParam;
-    int policy= SCHED_RR;
+    int policy= SCHED_OTHER;
     int param = pthread_getschedparam(this->posixId, &policy, &schedParam);
-    if (param < 0)
+    if (param == 0)
     {
-        isActive = false;
-        posixId = 0;
+        isActive = true;
+        pthread_attr_setschedparam(&posixAttr, &schedParam);
+    	pthread_attr_setschedpolicy(&posixAttr, policy);
     }
     else
     {
-    	isActive = true;
-        pthread_attr_setschedparam(&posixAttr, &schedParam);
-    	pthread_attr_setschedpolicy(&posixAttr, policy);
+    	isActive = false;
+        posixId = 0;
     }
 }
 
