@@ -31,6 +31,11 @@ After compiling with the commands above, 2 executables will be generated in the 
 ./MainB
 ```
 
+- Question C
+```bash
+./MainC
+```
+
 ## Question B
 La classe Timer étant abstraite, elle ne peut pas être instanciée. En fait, elle est utilisée comme superclasse pour d'autres classes, telles que la classe CountDown. Comme l'opération "call_callback" est la même pour toutes les sous-classes, elle est implémentée par la fonction abstraite Timer et n'a pas besoin d'être visible par les autres classes. Ainsi, cette opération est privée. L'opération "callback", en revanche, n'est pas implémentée par la classe Timer, car chacune de ses sous-classes possède sa propre implémentation. Par conséquent, comme cette opération doit être accessible aux sous-classes, elle a une visibilité protégée.
 Les autres opérations doivent être visibles par toutes les classes, car elles seront appelées dans la Main.
