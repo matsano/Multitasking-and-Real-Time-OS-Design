@@ -19,7 +19,7 @@ int main()
     std::cout << "Run loop time: " << chronometer.lap() << " ms" << std::endl;
 
     // Calculate the accuracy
-    std::cout << "Accuracy: " << ((1 - (std::abs(runTime - chronometer.lap()) / runTime))*100) << "% \n" << std::endl;
+    std::cout << "3) Accuracy: " << ((1 - (std::abs(runTime - chronometer.lap()) / runTime))*100) << "% \n" << std::endl;
 
     std::cout << "Verify if the calibration is correct (improved calibration)..." << std::endl;
     // // Calculate the number of loops with the calibration parameters

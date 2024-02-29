@@ -15,7 +15,7 @@ int main()
     sleep(10);
 
     // Get lab time while chronometer is activated
-    labActivated_ms = chronometer.lab();
+    labActivated_ms = chronometer.lap();
     std::cout << "Lab time (chronometer activated): " << labActivated_ms << " ms\n" << std::endl;
 
     // Wait for 10 seconds
@@ -26,7 +26,7 @@ int main()
     chronometer.stop();
 
     // Get lab time when chronometer is desactive
-    labDeactivated_ms = chronometer.lab();
+    labDeactivated_ms = chronometer.lap();
 
     std::cout << "Deactivate the chronometer..." << std::endl;
     std::cout << "Lab time (chronometer deactivated): " << labDeactivated_ms << " ms\n" << std::endl;
@@ -45,7 +45,7 @@ int main()
     chronometer.stop();
 
     // Get lab time when chronometer is desactive
-    labDeactivated_ms = chronometer.lab();
+    labDeactivated_ms = chronometer.lap();
 
     std::cout << "Deactivate the chronometer..." << std::endl;
     std::cout << "Lab time (chronometer deactivated): " << labDeactivated_ms << " ms" << std::endl;

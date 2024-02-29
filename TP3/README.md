@@ -19,7 +19,7 @@ make
 
 ## Execution
 
-After compiling with the commands above, 2 executables will be generated in the "build" folder. Each executable represents a question of the TP. The commands to run each of them are:
+After compiling with the commands above, 3 executables will be generated in the "build" folder. Each executable represents a question of the TP. The commands to run each of them are:
 
 - Question A
 ```bash
