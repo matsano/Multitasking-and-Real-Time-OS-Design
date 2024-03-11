@@ -61,14 +61,13 @@ int main()
     PriorityThread B(priorityB, execTimeB, delayTimeB, canUseMutexB, &cpuLoopB);
     PriorityThread C(priorityC, execTimeC, delayTimeC, timeCallMutexC, durationMutexC, canUseMutexC, &R, &cpuLoopC);
 
+    // double runTime = 5000;
+    // cpuLoopD.runTime(runTime);
 
     // Start scenario
     std::cout << "t = 0" << std::endl;
     std::cout << "Task B is activated..." << std::endl;
     B.start();
-
-    double runTime = 10000;
-    cpuLoopD.runTime(runTime);
 
     
     // double lap1 = chronometer.lap();

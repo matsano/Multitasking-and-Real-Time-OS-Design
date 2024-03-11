@@ -24,7 +24,6 @@ private:
 public:
     PriorityThread(int priorityThread, double execTime, double delay, double initTimeMutex, double durationMutex, bool canUseMutex, Mutex *mux, CpuLoop *loop);
     PriorityThread(int priorityThread, double execTime, double delay, bool canUseMutex, CpuLoop *loop);
-    ~PriorityThread();
 
 };
 

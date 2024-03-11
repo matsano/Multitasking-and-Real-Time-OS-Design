@@ -20,12 +20,16 @@ void Thread::start()
     }
 }
 
+void Thread::join()
+{
+    PosixThread::join();
+    stopTime_ts = timespec_now();
+}
+
 void* Thread::call_run(void* v_thread)
 {
-    std::cout << "Teste 3" << std::endl;
     Thread* thread = (Thread*) v_thread;
     thread->run();
-    std::cout << "Teste 4" << std::endl;
     return (void*) thread;
 }
 

@@ -2,21 +2,16 @@
 
 PriorityThread::PriorityThread(int priorityThread, double execTime, double delay, double initTimeMutex, double durationMutex, bool canUseMutex, Mutex *mux, CpuLoop *loop) : priority(priorityThread), executionTime(execTime), delayTime(delay), timeMutexRequired(initTimeMutex), durationTimeMutex(durationMutex), mutex(mux), cpuLoop(loop), availableMutex(canUseMutex)
 {
-    setScheduling(SCHED_RR, priorityThread);
+    setScheduling(SCHED_OTHER, priorityThread);
 }
 
 PriorityThread::PriorityThread(int priorityThread, double execTime, double delay, bool canUseMutex, CpuLoop *loop) : priority(priorityThread), executionTime(execTime), delayTime(delay), cpuLoop(loop), availableMutex(canUseMutex)
 {
-    setScheduling(SCHED_RR, priorityThread);
-}
-
-PriorityThread::~PriorityThread()
-{
+    setScheduling(SCHED_OTHER, priorityThread);
 }
 
 void PriorityThread::run()
 {
-    std::cout << "Run is working" << std::endl;
     // If the thread can use the mutex
     if (availableMutex)
     {
