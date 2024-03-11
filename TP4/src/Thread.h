@@ -18,6 +18,7 @@ public:
     ~Thread();
 
     void start();
+    void join();
     static void sleep_ms(double delay_ms);
     double startTime_ms();
     double stopTime_ms();
