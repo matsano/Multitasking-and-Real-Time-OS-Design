@@ -10,7 +10,7 @@ Mutex::Mutex(bool isInversionSafe)
     // Inverser la priorité
     if (isInversionSafe)
     {
-        std::cout << "INVERSE!!!" << std::endl;
+        pthread_mutexattr_setprotocol(&mutexAttribute, PTHREAD_PRIO_INHERIT);
     }
     
     // Initialize the condition and its associated mutex
