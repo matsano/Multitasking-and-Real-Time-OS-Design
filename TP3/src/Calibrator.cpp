@@ -5,6 +5,7 @@ Calibrator::Calibrator(double samplingPeriod_ms, unsigned nSamples) : nTotalSamp
     // Least Squares Method
     start(samplingPeriod_ms);
     looper.runLoop();
+    stop();
 
     // Calculate Sx and Sy
     double Sx = 0.0;
