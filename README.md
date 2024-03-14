@@ -2,7 +2,7 @@
 Multitasking and Real Time OS Design Course
 
 ## 📋 Description
-Exercises on the different topics covered in Multitasking and Real Time OS Design Course (https://irfu.cea.fr/Pisp/shebli.anvar/prog-mt-rtos/index.html).
+Exercises (TPs) about the different topics covered in Multitasking and Real Time OS Design Course (https://irfu.cea.fr/Pisp/shebli.anvar/prog-mt-rtos/index.html).
 In each TP, there is a README that shows how to generate the executables and run them. Each executable represents each of the items in each TP.
 
 ## 🛠️ Software used
