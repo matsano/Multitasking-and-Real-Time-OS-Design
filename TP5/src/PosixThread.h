@@ -11,6 +11,8 @@ class PosixThread
 private:
     pthread_t posixId;
     pthread_attr_t posixAttr;
+    int policyThread;
+    int priorityThread;
 
 protected:
     bool isActive;

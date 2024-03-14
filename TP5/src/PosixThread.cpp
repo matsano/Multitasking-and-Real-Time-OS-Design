@@ -4,11 +4,6 @@
 PosixThread::PosixThread() : posixId(0), isActive(false)
 {
     pthread_attr_init(&posixAttr);
-    pthread_attr_setinheritsched(&posixAttr, PTHREAD_EXPLICIT_SCHED);
-    pthread_attr_setschedpolicy(&posixAttr, SCHED_OTHER);
-    sched_param schedParam;
-    schedParam.sched_priority = 0;
-    pthread_attr_setschedparam(&posixAttr, &schedParam);
 }
 
 PosixThread::PosixThread(pthread_t posixId) : posixId(posixId), isActive(true)
@@ -16,9 +11,9 @@ PosixThread::PosixThread(pthread_t posixId) : posixId(posixId), isActive(true)
     pthread_attr_init(&posixAttr);
     pthread_attr_setinheritsched(&posixAttr, PTHREAD_EXPLICIT_SCHED);
     sched_param schedParam;
-    int policy= SCHED_OTHER;
+    int policy;
     int param = pthread_getschedparam(this->posixId, &policy, &schedParam);
-    if (param == 0)
+    if (param >= 0)
     {
         isActive = true;
         pthread_attr_setschedparam(&posixAttr, &schedParam);
@@ -40,7 +35,7 @@ void PosixThread::start(void*(*threadFunc)(void*), void* threadArg)
 {
     isActive = true;
     pthread_create(&posixId, &posixAttr, threadFunc, threadArg);
-
+    setScheduling(policyThread, priorityThread);
 }
 
 void PosixThread::join()
@@ -58,17 +53,19 @@ bool PosixThread::join(double timeout_ms)
 bool PosixThread::setScheduling(int schedPolicy, int priority)
 {
     sched_param schedParam;
-    schedParam.sched_priority = priority; 
-    
+    schedParam.sched_priority = priority;
+
     // Distinguish the two cases where the thread is already active or not
     if(isActive)
-    {
+    { 
         pthread_setschedparam(posixId, schedPolicy, &schedParam);
     }
     else
     {
         pthread_attr_setschedpolicy(&posixAttr, schedPolicy);
         pthread_attr_setschedparam(&posixAttr, &schedParam);
+        policyThread = schedPolicy;
+        priorityThread = priority;
     }
 
     return isActive;
@@ -77,7 +74,6 @@ bool PosixThread::setScheduling(int schedPolicy, int priority)
 bool PosixThread::getScheduling(int* pSchedPolicy, int* pPriority)
 {
     sched_param schedParam;
-    *pPriority = schedParam.sched_priority;
 
     // Distinguish the two cases where the thread is already active or not
     if(isActive)
@@ -89,6 +85,8 @@ bool PosixThread::getScheduling(int* pSchedPolicy, int* pPriority)
         pthread_attr_getschedpolicy(&posixAttr, pSchedPolicy);
         pthread_attr_getschedparam(&posixAttr, &schedParam);
     }
+
+    *pPriority = schedParam.sched_priority;
 
     return isActive;
 }

@@ -1,106 +1,122 @@
 #include <thread>
-#include "PriorityThread.h"
+#include "ExampleThread.h"
 #include "Calibrator.h"
 #include "CpuLoop.h"
 #include "Chrono.h"
 
-int main()
+int main(int, char*argv[])
 {
-
     // Use only one thread
 
-    // cpu_set_t cpuSet;
-    // // Initially there is no CPU core selected
-    // CPU_ZERO(&cpuSet);
-    // // The threads that will be created later will only be executed on the first CPU core
-    // CPU_SET(0, &cpuSet);
-    // // Setting the CPU affinity of the current process to run on only CPU 0
-    // sched_setaffinity(0, sizeof(cpu_set_t), &cpuSet);
+    cpu_set_t cpuSet;
+    // Initially there is no CPU core selected
+    CPU_ZERO(&cpuSet);
+    // The threads that will be created later will only be executed on the first CPU core
+    CPU_SET(0, &cpuSet);
+    // Setting the CPU affinity of the current process to run on only CPU 0
+    sched_setaffinity(0, sizeof(cpu_set_t), &cpuSet);
+
+    // Choose a single scheduling policy for all tasks
+    struct sched_param schedParam;
+    schedParam.sched_priority = sched_get_priority_max(SCHED_RR);
+    if (pthread_setschedparam(pthread_self(), SCHED_RR, &schedParam) < 0)
+    {
+        std::cerr << "Error in pthread_setschedparam" << std::endl;
+    }
+
+
+    // Verify if there is a priority inversion
+    std::string priorityInversion(argv[1]);
+    bool doPriorityInv = false;
+    if (priorityInversion == "true")
+    {
+        doPriorityInv = true;
+    }
+    else if (priorityInversion == "false")
+    {
+        doPriorityInv = false;
+    }
+
+    Mutex R(doPriorityInv);
 
 
     // Set the CPU loops
-    double samplingPeriod = 200;
-    Calibrator calibrator(samplingPeriod, 5);
+    Calibrator calibrator(200, 5);
     CpuLoop cpuLoopA(calibrator);
     CpuLoop cpuLoopB(calibrator);
     CpuLoop cpuLoopC(calibrator);
-    CpuLoop cpuLoopD(calibrator);
-    // Run time in CPU
-    // std::cout << "Runing time in CPU..." << std::endl;
-    // double runTime = 3000;
-    // Chrono chronometer;
-    // chronometer.restart();
-    // cpuLoop.runTime(runTime);
-    // chronometer.stop();
-
-
 
     // Set the 3 tasks (A, B and C) and the mutex (R)
-    int priorityA = 100;
-    double execTimeA = 40;
-    double delayTimeA = 60;
-    double timeCallMutexA = 10;
-    double durationMutexA = 10;
+    int priorityA = 90;
+    double execTimeA = 4;
+    double timeCallMutexA = 1;
+    double durationMutexA = 1;
     bool canUseMutexA = true;
 
     int priorityB = 50;
-    double execTimeB = 10;
-    double delayTimeB = 70;
+    double execTimeB = 1;
     bool canUseMutexB = false;
 
     int priorityC = 25;
-    double execTimeC = 5000;
-    double delayTimeC = 110;
-    double timeCallMutexC = 20;
-    double durationMutexC = 20;
+    double execTimeC = 5;
+    double timeCallMutexC = 2;
+    double durationMutexC = 2;
     bool canUseMutexC = true;
 
-    Mutex R(false);
+    ExampleThread A(priorityA, execTimeA, timeCallMutexA, durationMutexA, canUseMutexA, &R, &cpuLoopA);
+    ExampleThread B(priorityB, execTimeB, canUseMutexB, &cpuLoopB);
+    ExampleThread C(priorityC, execTimeC, timeCallMutexC, durationMutexC, canUseMutexC, &R, &cpuLoopC);
 
-    PriorityThread A(priorityA, execTimeA, delayTimeA, timeCallMutexA, durationMutexA, canUseMutexA, &R, &cpuLoopA);
-    PriorityThread B(priorityB, execTimeB, delayTimeB, canUseMutexB, &cpuLoopB);
-    PriorityThread C(priorityC, execTimeC, delayTimeC, timeCallMutexC, durationMutexC, canUseMutexC, &R, &cpuLoopC);
-
-    // double runTime = 5000;
-    // cpuLoopD.runTime(runTime);
 
     // Start scenario
-    std::cout << "t = 0" << std::endl;
-    std::cout << "Task B is activated..." << std::endl;
+    std::cout << "Activating tasks..." << std::endl;
+    C.start();
+    
+    timespec_wait(timespec_from_ms(3000));
+
+    A.start();
     B.start();
-
     
-    // double lap1 = chronometer.lap();
-    // timespec_wait(timespec_from_ms(3000));
-    // double lap2 = chronometer.lap();
-
-    // std::cout << "t = 3" << std::endl;
-
-    // std::cout << "Task A is activated..." << std::endl;
-    // std::cout << "Task B is activated..." << std::endl;
-    // A.start();
-    // B.start();
-    
-
-
-
     // Join Threads
-    // A.join();
+    A.join();
     B.join();
-    // C.join();
+    C.join();
 
-    std::cout << "Task B finished with execution time: " << B.execTime_ms() << " ms." << std::endl;
+    // Calculate execution time of the threads
+    double finalExecTimeA = A.execTime_ms();
+    double finalExecTimeB = B.execTime_ms();
+    double finalExecTimeC = C.execTime_ms();
 
-    // std::cout << "Task A finished" << std::endl;
-    // std::cout << "Task B finished" << std::endl;
-    // std::cout << "Task C finished" << std::endl;
+    std::cout << "\nFinal order of the threads:" << std::endl;
 
-    // std::cout << "Lap 1 = " << lap1 << std::endl;
-    // std::cout << "Lap 2 = " << lap2 << std::endl;
-
-
-
-
+    if (finalExecTimeA <= finalExecTimeB && finalExecTimeA <= finalExecTimeC) {
+        std::cout << "Task A finished with execution time: " << finalExecTimeA << " ms." << std::endl;
+        if (finalExecTimeB <= finalExecTimeC) {
+            std::cout << "Task B finished with execution time: " << finalExecTimeB << " ms." << std::endl;
+            std::cout << "Task C finished with execution time: " << finalExecTimeC << " ms." << std::endl;
+        } else {
+            std::cout << "Task C finished with execution time: " << finalExecTimeC << " ms." << std::endl;
+            std::cout << "Task B finished with execution time: " << finalExecTimeB << " ms." << std::endl;
+        }
+    } else if (finalExecTimeB <= finalExecTimeA && finalExecTimeB <= finalExecTimeC) {
+        std::cout << "Task B finished with execution time: " << finalExecTimeB << " ms." << std::endl;
+        if (finalExecTimeA <= finalExecTimeC) {
+            std::cout << "Task A finished with execution time: " << finalExecTimeA << " ms." << std::endl;
+            std::cout << "Task C finished with execution time: " << finalExecTimeC << " ms." << std::endl;
+        } else {
+            std::cout << "Task C finished with execution time: " << finalExecTimeC << " ms." << std::endl;
+            std::cout << "Task A finished with execution time: " << finalExecTimeA << " ms." << std::endl;
+        }
+    } else {
+        std::cout << "Task C finished with execution time: " << finalExecTimeC << " ms." << std::endl;
+        if (finalExecTimeA <= finalExecTimeB) {
+            std::cout << "Task A finished with execution time: " << finalExecTimeA << " ms." << std::endl;
+            std::cout << "Task B finished with execution time: " << finalExecTimeB << " ms." << std::endl;
+        } else {
+            std::cout << "Task B finished with execution time: " << finalExecTimeB << " ms." << std::endl;
+            std::cout << "Task A finished with execution time: " << finalExecTimeA << " ms." << std::endl;
+        }
+    }
 
     return 0;
 

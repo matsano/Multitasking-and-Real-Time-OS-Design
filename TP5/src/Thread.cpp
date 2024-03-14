@@ -16,20 +16,14 @@ void Thread::start()
         started = true;
         startTime_ts = timespec_now();
         PosixThread::start(call_run, (void*) this);
-        stopTime_ts = timespec_now();
     }
-}
-
-void Thread::join()
-{
-    PosixThread::join();
-    stopTime_ts = timespec_now();
 }
 
 void* Thread::call_run(void* v_thread)
 {
     Thread* thread = (Thread*) v_thread;
     thread->run();
+    thread->stopTime_ts = timespec_now();
     return (void*) thread;
 }
 

@@ -6,7 +6,7 @@
 class Thread : public PosixThread
 {
 private:
-    timespec startTime_ts, stopTime_ts, execTIme_ts;
+    timespec startTime_ts, stopTime_ts;
     static void* call_run(void* v_trhead);
     bool started;
 
@@ -18,7 +18,6 @@ public:
     ~Thread();
 
     void start();
-    void join();
     static void sleep_ms(double delay_ms);
     double startTime_ms();
     double stopTime_ms();

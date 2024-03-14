@@ -36,8 +36,8 @@ add_library(inversion
     ${LIB_DIR}/Lock.cpp
     ${LIB_DIR}/Mutex.h
     ${LIB_DIR}/Mutex.cpp
-    ${LIB_DIR}/PriorityThread.h
-    ${LIB_DIR}/PriorityThread.cpp
+    ${LIB_DIR}/ExampleThread.h
+    ${LIB_DIR}/ExampleThread.cpp
 )
 
 # Test file configuration

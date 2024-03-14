@@ -19,9 +19,12 @@ make
 
 ## Execution
 
-After compiling with the commands above, executables will be generated in the "build" folder. Each executable represents a question of the TP. The commands to run each of them are:
+After compiling with the commands above, executable will be generated in the "build" folder. The executable represents a question of the TP. The commands to run each of them are:
 
 - Question C
 ```bash
-./MainC
+sudo ./Main true
+sudo ./Main false
 ```
+
+It is worth noting that it is necessary to declare if the code will execute the priority inversion. If the argument is "true", the priority inversion will be executed. If the argument is "false", the priority inversion will not be executed.
